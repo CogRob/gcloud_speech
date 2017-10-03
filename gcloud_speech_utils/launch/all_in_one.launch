@@ -16,4 +16,7 @@
   <node name="gcloud_speech_example_client" pkg="gcloud_speech_utils"
         type="example_client.py" respawn="true" output="screen"/>
 
+  <node name="playback_microphone_audio" pkg="gcloud_speech_utils"
+        type="playback_microphone_audio.py" />
+
 </launch>
