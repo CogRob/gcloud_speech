@@ -1,3 +1,4 @@
+# These files are modified by CogRob to work with Catkin/ROS.
 # Google APIs
 
 This repository contains the original interface definitions of public
