@@ -20,6 +20,8 @@ include_directories(src/workspace)
 
 add_library(gcloud_speech_utils_record_audio_lib
   src/workspace/cogrob/cloud/speech/record_audio.cc
+  src/workspace/util/status.cc
+  src/workspace/util/statusor.cc
 )
 target_link_libraries(gcloud_speech_utils_record_audio_lib portaudio)
 

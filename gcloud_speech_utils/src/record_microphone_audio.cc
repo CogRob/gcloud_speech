@@ -33,11 +33,15 @@
 #include "third_party/gflags.h"
 #include "third_party/glog.h"
 #include "util/simple_thread_safe_queue.h"
+#include "util/statusor.h"
 
 using gcloud_speech_msgs::LinearPcm16Le16000Audio;
 
 namespace speech = ::cogrob::cloud::speech;
 using speech::AudioSample;
+
+DEFINE_int32(mic_fatal_timeout_msec, 2000,
+    "Timeout (ms) to terminate the program if no sample is available.");
 
 int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);
@@ -57,7 +61,13 @@ int main(int argc, char *argv[]) {
       ("/cogrob/microphone_audio", 10);
 
   while (ros::ok()) {
-    std::unique_ptr<AudioSample> sample = std::move(audio_queue.blocking_pop());
+    util::StatusOr<std::unique_ptr<AudioSample>> queue_result = std::move(
+        audio_queue.blocking_pop(FLAGS_mic_fatal_timeout_msec));
+    if (!queue_result.ok()) {
+      LOG(FATAL) << "Getting audio from microphone timed out.";
+    }
+    std::unique_ptr<AudioSample> sample = std::move(
+        queue_result.ConsumeValueOrDie());
     LinearPcm16Le16000Audio audio_msg;
     audio_msg.data = *sample;
     mic_pub.publish(audio_msg);
