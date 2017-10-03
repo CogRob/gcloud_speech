@@ -27,6 +27,8 @@
 #ifndef COGROB_CLOUD_SPEECH_RECORD_AUDIO_H_
 #define COGROB_CLOUD_SPEECH_RECORD_AUDIO_H_
 
+#include "portaudio.h"
+
 #include <atomic>
 #include <memory>
 #include <thread>
@@ -44,10 +46,13 @@ class AudioRecorder {
   virtual ~AudioRecorder();
  private:
   AudioQueue* queue_;
-  void LoopThread();
-  std::atomic_bool stop_{false};
-
-  std::unique_ptr<std::thread> thread_;
+  PaStream* pa_stream_ = nullptr;
+  void StartRecording();
+  void StopRecording();
+  static int PortAudioCallback(
+      const void* input, void* output, unsigned long frame_count,
+      const PaStreamCallbackTimeInfo* time_info,
+      PaStreamCallbackFlags status_flags, void* user_data);
 };
 
 }  // namespace speech

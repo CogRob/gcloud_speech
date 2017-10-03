@@ -49,18 +49,15 @@ namespace speech {
 
 AudioRecorder::AudioRecorder(AudioQueue* output_queue) {
   queue_ = output_queue;
-  thread_.reset(new std::thread([this] {
-      LoopThread();
-  }));
+  StartRecording();
 }
 
 AudioRecorder::~AudioRecorder() {
-  stop_.store(true);
-  thread_->join();
+  StopRecording();
 }
 
-void AudioRecorder::LoopThread() {
-  PaError pa_err;
+void AudioRecorder::StartRecording() {
+  PaError pa_err = paNoError;
 
   // Intialize PortAudio
   pa_err = Pa_Initialize();
@@ -101,47 +98,51 @@ void AudioRecorder::LoopThread() {
     .hostApiSpecificStreamInfo = nullptr
   };
 
-  PaStream *pa_stream;
-  pa_err = Pa_OpenStream(&pa_stream, &input_param, nullptr, SAMPLE_RATE,
-                         SAMPLES_PER_SLICE, paNoFlag, nullptr, nullptr);
+  pa_err = Pa_OpenStream(&pa_stream_, &input_param, nullptr, SAMPLE_RATE,
+                         SAMPLES_PER_SLICE, paNoFlag,
+                         AudioRecorder::PortAudioCallback, this);
 
   if (pa_err != paNoError) {
     LOG(FATAL) << "PortAudio open stream error: " << Pa_GetErrorText(pa_err);
   }
   // Start the stream
-  Pa_StartStream(pa_stream);
+  Pa_StartStream(pa_stream_);
   if (pa_err != paNoError) {
     LOG(FATAL) << "PortAudio start stream error: " << Pa_GetErrorText(pa_err);
   }
 
-  while (!stop_.load()) {
-    std::vector<int16_t> read_buffer;
-    read_buffer.resize(SAMPLES_PER_SLICE);
+}
 
-    // Read from the microphone
-    pa_err = Pa_ReadStream(
-        pa_stream, read_buffer.data(), SAMPLES_PER_SLICE);
-
-    std::unique_ptr<AudioSample> audio_sample(new AudioSample());
-    audio_sample->resize(SAMPLES_PER_SLICE * 2);
-
-    for (size_t i = 0; i < SAMPLES_PER_SLICE; ++i) {
-      (*audio_sample)[i * 2] = read_buffer[i] & 0xFF;
-      (*audio_sample)[i * 2 + 1] = (read_buffer[i] >> 8) & 0xFF;
-    }
-    // Put into the queue
-    queue_->push(std::move(audio_sample));
-  }
-
-  // Clean up
-  Pa_StopStream(pa_stream);
+void AudioRecorder::StopRecording() {
+  PaError pa_err = paNoError;
+  Pa_StopStream(pa_stream_);
   if (pa_err != paNoError) {
     LOG(FATAL) << "PortAudio stop stream error: " << Pa_GetErrorText(pa_err);
   }
-  Pa_CloseStream(pa_stream);
+  Pa_CloseStream(pa_stream_);
   if (pa_err != paNoError) {
     LOG(FATAL) << "PortAudio close stream error: " << Pa_GetErrorText(pa_err);
   }
+}
+
+int AudioRecorder::PortAudioCallback(
+    const void* input, void* output, unsigned long frame_count,
+    const PaStreamCallbackTimeInfo* time_info,
+    PaStreamCallbackFlags status_flags, void* user_data) {
+  AudioRecorder* recorder = static_cast<AudioRecorder*>(user_data);
+
+  LOG_IF(ERROR, frame_count != SAMPLES_PER_SLICE) << "Callback frame_count is "
+      << frame_count << ", which is not " << SAMPLES_PER_SLICE;
+  LOG_IF(ERROR, status_flags) << "Callback status flag is " << status_flags;
+
+  std::unique_ptr<AudioSample> audio_sample(new AudioSample());
+  audio_sample->resize(SAMPLES_PER_SLICE * 2);
+
+  memcpy(audio_sample->data(), input, SAMPLES_PER_SLICE * 2);
+
+  recorder->queue_->push(std::move(audio_sample));
+
+  return paContinue;
 }
 
 }  // namespace speech
