@@ -9,6 +9,9 @@ namespace speech = ::cogrob::cloud::speech;
 using SpeechToTextSimpleActionServer =
     actionlib::SimpleActionServer<gcloud_speech_msgs::SpeechToTextAction>;
 
+DEFINE_int32(speech_fail_prematurely_retry_cutoff_msec, 300,
+    "Cutoff duration to allow retrying if recognition failed prematurely.");
+
 namespace gcloud_speech {
 
 SpeechToTextActionHandler::SpeechToTextActionHandler(
@@ -49,43 +52,59 @@ void SpeechToTextActionHandler::ExecuteSpeechToTextAction(
 
   bool interim_results = !goal->suppress_interim_results;
 
-  LOG(INFO) << "Start recognize.";
-  recognizer_->StartRecognize(&audio_queue_, &result_queue_, goal->hints,
-      max_audio_seconds, max_wait_seconds, goal->max_alternatives);
-
+  // This is the result we will publish.
   gcloud_speech_msgs::SpeechToTextResult result_msg;
 
-  while (recognizer_->IsRunning() &&
-      !simple_action_server_->isPreemptRequested()) {
-    util::StatusOr<speech::RecognitionResult> result
-        = result_queue_.blocking_pop(100);
-    if (result.ok()) {
-      // Processes the result and post some feedback.
-      LOG(INFO) << "Result: " << result.ValueOrDie().ShortDebugString();
+  int retry_time_left = 2;
+  std::chrono::system_clock::time_point retry_deadline =
+    std::chrono::system_clock::now() +
+    std::chrono::milliseconds(FLAGS_speech_fail_prematurely_retry_cutoff_msec);
 
-      if (result.ValueOrDie().is_final() or interim_results) {
-        gcloud_speech_msgs::SpeechToTextFeedback feedback_msg;
-        for (const auto& candidate: result.ValueOrDie().candidates()) {
-          gcloud_speech_msgs::RecognitionHypothesis hypothesis;
-          hypothesis.transcript = candidate.transcript();
-          hypothesis.confidence = candidate.confidence();
-          feedback_msg.hypotheses.push_back(hypothesis);
+  while (retry_time_left > 0
+         && std::chrono::system_clock::now() < retry_deadline) {
+    LOG(INFO) << "Start recognize.";
+    recognizer_->StartRecognize(&audio_queue_, &result_queue_, goal->hints,
+        max_audio_seconds, max_wait_seconds, goal->max_alternatives);
+
+    while (recognizer_->IsRunning() &&
+        !simple_action_server_->isPreemptRequested()) {
+      util::StatusOr<speech::RecognitionResult> result
+          = result_queue_.blocking_pop(100);
+      if (result.ok()) {
+        // Processes the result and post some feedback.
+        LOG(INFO) << "Result: " << result.ValueOrDie().ShortDebugString();
+
+        if (result.ValueOrDie().is_final() or interim_results) {
+          gcloud_speech_msgs::SpeechToTextFeedback feedback_msg;
+          for (const auto& candidate: result.ValueOrDie().candidates()) {
+            gcloud_speech_msgs::RecognitionHypothesis hypothesis;
+            hypothesis.transcript = candidate.transcript();
+            hypothesis.confidence = candidate.confidence();
+            feedback_msg.hypotheses.push_back(hypothesis);
+          }
+          feedback_msg.is_portion_final = result.ValueOrDie().is_final();
+          feedback_msg.stability = result.ValueOrDie().stability();
+          simple_action_server_->publishFeedback(feedback_msg);
         }
-        feedback_msg.is_portion_final = result.ValueOrDie().is_final();
-        feedback_msg.stability = result.ValueOrDie().stability();
-        simple_action_server_->publishFeedback(feedback_msg);
-      }
 
-      if (result.ValueOrDie().is_final()) {
-        if (result.ValueOrDie().candidates().size() > 0) {
-          result_msg.transcript +=
-              " " + result.ValueOrDie().candidates()[0].transcript();
+        if (result.ValueOrDie().is_final()) {
+          if (result.ValueOrDie().candidates().size() > 0) {
+            result_msg.transcript +=
+                " " + result.ValueOrDie().candidates()[0].transcript();
+          }
         }
       }
     }
-  }
 
-  recognizer_->Stop();
+    recognizer_->Stop();
+
+    if (recognizer_->GetLastResult().ok()) {
+      // If there is no error, we can quit retrying.
+      break;
+    }
+    // Decreate retry counter so we don't retry too many times.
+    --retry_time_left;
+  }
 
   util::StatusOr<speech::RecognitionResult> last_result =
       recognizer_->GetLastResult();
