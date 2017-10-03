@@ -71,7 +71,7 @@ these software at your own risk.
 
 ### Google Cloud Console
 
-Please visit `https://console.cloud.google.com` to add a project and create
+Please visit https://console.cloud.google.com to add a project and create
 service accounts for the users under "IAM & admin". We recommend one service
 account for each machine. You will be able to create keys (in JSON format) in
 the same console.
