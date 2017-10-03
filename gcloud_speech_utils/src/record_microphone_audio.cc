@@ -40,6 +40,9 @@ using gcloud_speech_msgs::LinearPcm16Le16000Audio;
 namespace speech = ::cogrob::cloud::speech;
 using speech::AudioSample;
 
+DEFINE_int32(mic_fatal_timeout_msec, 2000,
+    "Timeout (ms) to terminate the program if no sample is available.");
+
 int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);
   google::LogToStderr();
@@ -59,7 +62,7 @@ int main(int argc, char *argv[]) {
 
   while (ros::ok()) {
     util::StatusOr<std::unique_ptr<AudioSample>> queue_result = std::move(
-        audio_queue.blocking_pop(2000));
+        audio_queue.blocking_pop(FLAGS_mic_fatal_timeout_msec));
     if (!queue_result.ok()) {
       LOG(FATAL) << "Getting audio from microphone timed out.";
     }
