@@ -24,34 +24,21 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef COGROB_CLOUD_SPEECH_RECORD_AUDIO_H_
-#define COGROB_CLOUD_SPEECH_RECORD_AUDIO_H_
+#ifndef COGROB_CLOUD_BASIC_DEFAULTS_H_
+#define COGROB_CLOUD_BASIC_DEFAULTS_H_
 
-#include <atomic>
-#include <memory>
-#include <thread>
-
-#include "util/simple_thread_safe_queue.h"
-#include "cogrob/cloud/speech/audio_sample.h"
+#include <string>
 
 namespace cogrob {
 namespace cloud {
-namespace speech {
 
-class AudioRecorder {
- public:
-  explicit AudioRecorder(AudioQueue* output_queue);
-  virtual ~AudioRecorder();
- private:
-  AudioQueue* queue_;
-  void LoopThread();
-  std::atomic_bool stop_{false};
+void PrepareGoogleCloudCredentials();
 
-  std::unique_ptr<std::thread> thread_;
-};
+std::string GetAgentName();
 
-}  // namespace speech
+std::string GetGcloudProjectName();
+
 }  // namespace cloud
 }  // namespace cogrob
 
-#endif  // COGROB_CLOUD_SPEECH_RECORD_AUDIO_H_
+#endif  // COGROB_CLOUD_BASIC_DEFAULTS_H_

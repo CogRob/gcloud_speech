@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(gcloud_speech)
 
-INCLUDE(CheckIncludeFileCXX)
-
 find_package(catkin
   REQUIRED COMPONENTS actionlib actionlib_msgs gcloud_speech_msgs grpc roscpp)
 
@@ -95,21 +93,3 @@ add_executable(gcloud_speech_action_node
   src/gcloud_speech_action_node.cc src/speech_to_text_action_handler.cc)
 target_link_libraries(gcloud_speech_action_node
   ${catkin_LIBRARIES} gcloud_speech_lib)
-
-# Optionally build some local test program if portaudio exists in the system.
-CHECK_INCLUDE_FILE_CXX("portaudio.h" HAVE_PORTAUDIO)
-if(NOT HAVE_PORTAUDIO)
-  unset(HAVE_PORTAUDIO CACHE)
-  message(WARNING "portaudio.h not found, will not build test programs.")
-else()
-  # We have portaudio installed, so let's build some test programs.
-  add_library(gcloud_speech_record_audio_lib
-    src/workspace/cogrob/cloud/speech/record_audio.cc
-  )
-  target_link_libraries(gcloud_speech_record_audio_lib portaudio)
-
-  add_executable(gcloud_speech_speech_local_main
-    src/workspace/cogrob/cloud/speech/speech_local_main.cc)
-  target_link_libraries(gcloud_speech_speech_local_main
-    gcloud_speech_record_audio_lib gcloud_speech_lib gflags glog)
-endif()

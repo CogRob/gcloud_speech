@@ -4,6 +4,74 @@ These packages integrate
 [Google Cloud Speech API](https://cloud.google.com/speech/) into
 [ROS](http://www.ros.org/) ecosystem.
 
+## Usage
+
+### `gcloud_speech_msgs`: ROS Message Definitions
+
+`gcloud_speech_msgs` defines following messages:
+
+* `gcloud_speech_msgs/LinearPcm16Le16000Audio` represents raw audio buffer in
+  Linear PCM format, 16 bits, little endian, sample rate 16,000 Hz. It could be
+  generated/converted by any other nodes.
+* `gcloud_speech_msgs/RecognitionHypothesis` represents a recognition
+  hypothesis. It is a pair of transcript and confidence score.
+* `gcloud_speech_msgs/SpeechToTextAction` and other action server messages
+  defines a `actionlib` interface to interact with Google Cloud Speech API.
+
+
+### `gcloud_speech`: Google Cloud Speech API ActionServer
+
+`gcloud_speech/gcloud_speech_action_node` is a SimpleActionServer node. It
+could only serve one goal at a time (theoretically it could serve multiple
+goals, but we don't have an immediate plan for this). Newer goal preempts older
+goal. A goal specifies hints, max listening time, max execution time, and some
+other parameters. And the action server will start streaming results from Google
+Cloud Speech API through action feedback. A goal can be preempted/canceled
+anytime, and the result will return a single transcript. We highly recommend
+relying on feedback to get recognition results.
+
+`gcloud_speech_action_node` serves the action server at
+`/cogrob/speech_to_text` with type `gcloud_speech_msgs/SpeechToTextAction`.
+It listens to `/cogrob/microphone_audio` audio topic with type
+`gcloud_speech_msgs/LinearPcm16Le16000Audio`.
+
+To start `gcloud_speech_action_node`, a few command line flags must be set
+correctly:
+```
+--gcloud_cred=/path/to/your/google_cloud_credential.json
+--grpc_roots=/path/to/grpc_roots.pem
+--gcloud_project=your_google_cloud_project_id
+```
+The `grpc_roots.pem` file can be downloaded from
+[here](https://github.com/grpc/grpc/blob/master/etc/roots.pem). We have also
+included a copy in `gcloud_speech_utils` package under `assets` directory.
+
+### `gcloud_speech_utils`: Utilities and Examples
+This package provides a `record_microphone_audio` node that publishes
+`LinearPcm16Le16000Audio`. By default it looks for USB microphones. You can add
+`--mic=MicrophoneName` to override this option. The argument only need to
+partially match of the micrphone name seen by portaudio.
+
+This package also provides a `example_client.py` program that interacts with the
+ActionServer.
+
+You may also find some useful ROS launch files in this package.
+
+Everything is this package is experimental and for demostration purpose only.
+We recommend you use these software at your own risk.
+
+### Google Cloud Console
+
+Please visit `https://console.cloud.google.com` to add a project and create
+service accounts for the users under "IAM & admin". We recommend one service
+account for each machine. You will be able to create keys (in JSON format) in
+the same console.
+
+You *must* enable Speech API before you can use it. We have experienced no error
+message shown for Speech API not enabled error in the past. To enabled Speech
+API, search "Speech" in the search bar.
+
+
 ## License
 
 This package is licensed under the 3-Clause BSD License.
