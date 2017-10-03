@@ -2,7 +2,6 @@
 import array
 import collections
 import pyaudio
-import Queue
 import time
 
 import rospy
