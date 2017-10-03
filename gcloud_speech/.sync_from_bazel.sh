@@ -19,7 +19,9 @@ mkdir -p $DEST_WORKSPACE
 
 cd $SRC_WORKSPACE
 ALL_MAYBE_FILES=$( \
-  bazel query "deps(//cogrob/cloud/speech:all)" | \
+  bazel query "deps(//cogrob/cloud/speech:google_speech) union \
+               deps(//cogrob/cloud/basic:defaults) union \
+               deps(//cogrob/cloud/speech:speech_local_main)" | \
   egrep "^//" | \
   egrep -v "^//external" | \
   sed -e "s/:/\//g"

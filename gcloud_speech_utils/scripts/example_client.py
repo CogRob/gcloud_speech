@@ -1,8 +1,10 @@
 #! /usr/bin/env python
 from __future__ import print_function
 
+import os
 import signal
 import sys
+import threading
 import time
 
 import actionlib
@@ -35,6 +37,11 @@ def SpeechToTextSimpleExampleClient():
     sigint_received = True
 
 
+  def DelayedExit(wait_time):
+    time.sleep(wait_time)
+    os._exit(0)
+
+
   signal.signal(signal.SIGINT, SignalIntHandler)
 
   client = actionlib.SimpleActionClient(
@@ -51,6 +58,12 @@ def SpeechToTextSimpleExampleClient():
       break
 
   if sigint_received:
+    # Waits for 1 seconds and force kill the program, in case the action server
+    # is dead already (which is the case in our example launch file).
+    exit_thread = threading.Thread(target=DelayedExit, args=(1, ))
+    exit_thread.daemon = True
+    exit_thread.start()
+
     client.cancel_goal()
 
   client.wait_for_result()

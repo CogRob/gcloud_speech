@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
       };
 
   SpeechToTextSimpleActionServer action_server(
-      ros_node_handle, "cogrob/speech_to_text", exec_callback, false);
+      ros_node_handle, "/cogrob/speech_to_text", exec_callback, false);
 
   {
     // Limit the scope of the lock.
