@@ -33,6 +33,7 @@
 #include "third_party/gflags.h"
 #include "third_party/glog.h"
 #include "util/simple_thread_safe_queue.h"
+#include "util/statusor.h"
 
 using gcloud_speech_msgs::LinearPcm16Le16000Audio;
 
@@ -57,7 +58,13 @@ int main(int argc, char *argv[]) {
       ("/cogrob/microphone_audio", 10);
 
   while (ros::ok()) {
-    std::unique_ptr<AudioSample> sample = std::move(audio_queue.blocking_pop());
+    util::StatusOr<std::unique_ptr<AudioSample>> queue_result = std::move(
+        audio_queue.blocking_pop(2000));
+    if (!queue_result.ok()) {
+      LOG(FATAL) << "Getting audio from microphone timed out.";
+    }
+    std::unique_ptr<AudioSample> sample = std::move(
+        queue_result.ConsumeValueOrDie());
     LinearPcm16Le16000Audio audio_msg;
     audio_msg.data = *sample;
     mic_pub.publish(audio_msg);
