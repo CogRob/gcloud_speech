@@ -93,3 +93,16 @@ add_executable(gcloud_speech_action_node
   src/gcloud_speech_action_node.cc src/speech_to_text_action_handler.cc)
 target_link_libraries(gcloud_speech_action_node
   ${catkin_LIBRARIES} gcloud_speech_lib)
+
+option(GCLOUD_SPEECH_LOCAL_MAIN "GCLOUD_SPEECH_LOCAL_MAIN" OFF)
+if(GCLOUD_SPEECH_LOCAL_MAIN)
+  add_library(gcloud_speech_record_audio_lib
+    src/workspace/cogrob/cloud/speech/record_audio.cc
+  )
+  target_link_libraries(gcloud_speech_record_audio_lib portaudio)
+
+  add_executable(speech_local_main
+    src/workspace/cogrob/cloud/speech/speech_local_main.cc)
+  target_link_libraries(speech_local_main
+    gcloud_speech_record_audio_lib gcloud_speech_lib gflags glog)
+endif()

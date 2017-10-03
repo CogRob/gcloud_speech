@@ -46,6 +46,14 @@ The `grpc_roots.pem` file can be downloaded from
 [here](https://github.com/grpc/grpc/blob/master/etc/roots.pem). We have also
 included a copy in `gcloud_speech_utils` package under `assets` directory.
 
+#### For Developers
+
+We provide a `speech_local_main` program that does not rely on ROS. It uses
+`portaudio` to capture audio and prints recognition result to the screen. To
+build this program, enable set `-DGCLOUD_SPEECH_LOCAL_MAIN=ON` when invoking
+cmake (`catkin build --cmake-args -DGCLOUD_SPEECH_LOCAL_MAIN=ON`). Command line
+flag `--mic=MicrophoneName` sets the microphone the program should use.
+
 ### `gcloud_speech_utils`: Utilities and Examples
 This package provides a `record_microphone_audio` node that publishes
 `LinearPcm16Le16000Audio`. By default it looks for USB microphones. You can add
@@ -70,7 +78,6 @@ the same console.
 You *must* enable Speech API before you can use it. We have experienced no error
 message shown for Speech API not enabled error in the past. To enabled Speech
 API, search "Speech" in the search bar.
-
 
 ## License
 

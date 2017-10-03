@@ -24,60 +24,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include "cogrob/cloud/basic/defaults.h"
+#ifndef THIRD_PARTY_PORTAUDIO_H_
+#define THIRD_PARTY_PORTAUDIO_H_
 
-#include <stdlib.h>
-#include <unistd.h>
+#include <portaudio.h>
 
-#include <string>
-#include "third_party/gflags.h"
-
-#define AUTO_PLACEHOLDER "__auto__"
-
-DEFINE_string(grpc_roots, "/opt/cogrob/credentials/grpc_roots.pem",
-    "gRPC trusted root certificate store path.");
-
-DEFINE_string(gcloud_cred, "/opt/cogrob/credentials/gcloud_credentials.json",
-    "Google Cloud APIs credentials json path.");
-
-DEFINE_string(gcloud_project, AUTO_PLACEHOLDER,
-    "Google Cloud Platform project name.");
-
-DEFINE_string(agent, AUTO_PLACEHOLDER, "The name of the robot.");
-
-namespace cogrob {
-namespace cloud {
-
-void PrepareGoogleCloudCredentials() {
-  setenv("GRPC_DEFAULT_SSL_ROOTS_FILE_PATH", FLAGS_grpc_roots.c_str(), 0);
-  setenv("GOOGLE_APPLICATION_CREDENTIALS", FLAGS_gcloud_cred.c_str(), 0);
-}
-
-std::string GetAgentName() {
-  std::string result = FLAGS_agent;
-  if (result == AUTO_PLACEHOLDER) {
-    const int BUF_LEN = 1024;
-    char hostname[BUF_LEN];
-    hostname[BUF_LEN - 1] = '\0';
-    gethostname(hostname, BUF_LEN - 1);
-    result = hostname;
-  }
-  return result;
-}
-
-std::string GetGcloudProjectName() {
-  std::string result = FLAGS_gcloud_project;
-  if (result == AUTO_PLACEHOLDER) {
-    std::string agent_name = GetAgentName();
-    if (agent_name.find("fetch") == 0 || agent_name.find("freight") == 0 ||
-        agent_name.find("hsr") == 0) {
-      result = "cogrob-prod";
-    } else {
-      result = "cogrob-devel";
-    }
-  }
-  return result;
-}
-
-}  // namespace cloud
-}  // namespace cogrob
+#endif  // THIRD_PARTY_PORTAUDIO_H_
