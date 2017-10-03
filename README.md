@@ -49,10 +49,10 @@ included a copy in `gcloud_speech_utils` package under `assets` directory.
 #### For Developers
 
 We provide a `speech_local_main` program that does not rely on ROS. It uses
-`portaudio` to capture audio and prints recognition result to the screen. To
-build this program, enable set `-DGCLOUD_SPEECH_LOCAL_MAIN=ON` when invoking
-cmake (`catkin build --cmake-args -DGCLOUD_SPEECH_LOCAL_MAIN=ON`). Command line
-flag `--mic=MicrophoneName` sets the microphone the program should use.
+`portaudio` (`portaudio19-dev`) to capture audio and prints recognition result
+to the screen. To build this program, enable set `-DGCLOUD_SPEECH_LOCAL_MAIN=ON`
+when invoking cmake (`catkin build --cmake-args -DGCLOUD_SPEECH_LOCAL_MAIN=ON`).
+Command line flag `--mic=MicrophoneName` sets the microphone the program uses.
 
 ### `gcloud_speech_utils`: Utilities and Examples
 This package provides a `record_microphone_audio` node that publishes
@@ -65,8 +65,9 @@ ActionServer.
 
 You may also find some useful ROS launch files in this package.
 
-Everything is this package is experimental and for demostration purpose only.
-We recommend you use these software at your own risk.
+Everything is `gcloud_speech_utils` package is experimental and for demostration
+purpose only. We recommend you NOT to use them in critical environment. Use
+these software at your own risk.
 
 ### Google Cloud Console
 
