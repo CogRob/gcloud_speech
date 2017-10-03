@@ -108,11 +108,6 @@ else()
   )
   target_link_libraries(gcloud_speech_record_audio_lib portaudio)
 
-  add_executable(gcloud_speech_print_rms
-    src/workspace/cogrob/cloud/speech/print_rms.cc)
-  target_link_libraries(gcloud_speech_print_rms
-    gcloud_speech_record_audio_lib gflags glog)
-
   add_executable(gcloud_speech_speech_local_main
     src/workspace/cogrob/cloud/speech/speech_local_main.cc)
   target_link_libraries(gcloud_speech_speech_local_main

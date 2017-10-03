@@ -23,9 +23,9 @@ add_library(gcloud_speech_utils_record_audio_lib
 )
 target_link_libraries(gcloud_speech_utils_record_audio_lib portaudio)
 
-add_executable(gcloud_speech_utils_print_rms
+add_executable(print_rms
   src/workspace/cogrob/cloud/speech/print_rms.cc)
-target_link_libraries(gcloud_speech_utils_print_rms
+target_link_libraries(print_rms
   gcloud_speech_utils_record_audio_lib gflags glog)
 
 add_executable(record_microphone_audio src/record_microphone_audio.cc)
