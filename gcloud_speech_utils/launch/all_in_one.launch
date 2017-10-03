@@ -1,4 +1,6 @@
 <launch>
+  <!-- Please replace gcloud_credentials.json and cogrob_devel with a proper
+       credential path and project name. -->
   <node
     name="gcloud_speech_action_node"
     pkg="gcloud_speech"
@@ -10,13 +12,13 @@
     "
   />
 
+  <!-- Please replace Samson with a proper microphone name. -->
   <node name="record_microphone_audio" pkg="gcloud_speech_utils"
-        type="record_microphone_audio" args="--mic=USB" />
+        type="record_microphone_audio" respawn="true" args="--mic=Samson" />
 
   <node name="gcloud_speech_example_client" pkg="gcloud_speech_utils"
         type="example_client.py" respawn="true" output="screen"/>
 
   <node name="playback_microphone_audio" pkg="gcloud_speech_utils"
         type="playback_microphone_audio.py" />
-
 </launch>
