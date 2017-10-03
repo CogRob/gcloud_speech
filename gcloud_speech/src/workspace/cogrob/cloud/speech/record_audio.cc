@@ -136,9 +136,9 @@ int AudioRecorder::PortAudioCallback(
   LOG_IF(ERROR, status_flags) << "Callback status flag is " << status_flags;
 
   std::unique_ptr<AudioSample> audio_sample(new AudioSample());
-  audio_sample->resize(SAMPLES_PER_SLICE * 2);
+  audio_sample->resize(frame_count * 2);
 
-  memcpy(audio_sample->data(), input, SAMPLES_PER_SLICE * 2);
+  memcpy(audio_sample->data(), input, frame_count * 2);
 
   recorder->queue_->push(std::move(audio_sample));
 
