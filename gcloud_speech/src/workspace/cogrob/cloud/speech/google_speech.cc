@@ -27,6 +27,7 @@
 #include "cogrob/cloud/speech/google_speech.h"
 
 #include <grpc++/grpc++.h>
+#include <grpc/impl/codegen/connectivity_state.h>
 #include <chrono>
 #include <memory>
 #include <string>
@@ -61,9 +62,9 @@ namespace speech {
 GoogleSpeechRecognizer::GoogleSpeechRecognizer() {
   std::lock_guard<std::mutex> lock(general_mutex_);
   // Creates a stub connected to the speech service.
-  auto creds = grpc::GoogleDefaultCredentials();
-  auto channel = grpc::CreateChannel("speech.googleapis.com", creds);
-  gspeech_stub_ = std::move(gspeech::Speech::NewStub(channel));
+  channel_ = grpc::CreateChannel(
+      "speech.googleapis.com", grpc::GoogleDefaultCredentials());
+  gspeech_stub_ = std::move(gspeech::Speech::NewStub(channel_));
 
   // Resets status.
   latest_result_ = Status(
@@ -185,7 +186,8 @@ void GoogleSpeechRecognizer::RecognitionThread(AudioQueue* audio_queue,
 
   if (fail_flag) {
     done_flag_.store(true);
-    LOG(ERROR) << "There are some errors, finishing RecognitionThread.";
+    LOG(ERROR) << "There are some errors on preconditions, "
+               << "finishing RecognitionThread.";
     return;
   }
 
@@ -207,7 +209,63 @@ void GoogleSpeechRecognizer::RecognitionThread(AudioQueue* audio_queue,
   // After this point, we must drain the CompletionQueue before the can destory
   // the instance.
 
-  // Starts a async call.
+  // Deadline to wait to connect and channel and for AsyncStreamingRecognize
+  // (stream creation) to return, if the time is exceed, we will give up.
+  std::chrono::system_clock::time_point stream_connect_deadline =
+      std::chrono::system_clock::now()
+      + std::chrono::seconds(FLAGS_grpc_speech_connect_timeout_secs);
+
+  // If the channel is in IDLE and try_to_connect is set to true, try to
+  // connect. If connection timeout, give up.
+  channel_->GetState(true);
+  if (!channel_->WaitForConnected(stream_connect_deadline)) {
+    latest_result_ = Status(util::error::ABORTED,
+                            "gRPC error: Channel connection took too long.");
+    LOG(ERROR) << latest_result_.status();
+    fail_flag = true;
+  }
+
+  // Check the channel state for debugging purpose.
+  string channel_state = "";
+  grpc_connectivity_state channel_state_enum = channel_->GetState(false);
+  switch (channel_state_enum) {
+    case GRPC_CHANNEL_INIT:
+      channel_state = "GRPC_CHANNEL_INIT";
+      break;
+    case GRPC_CHANNEL_IDLE:
+      channel_state = "GRPC_CHANNEL_IDLE";
+      break;
+    case GRPC_CHANNEL_CONNECTING:
+      channel_state = "GRPC_CHANNEL_CONNECTING";
+      break;
+    case GRPC_CHANNEL_READY:
+      channel_state = "GRPC_CHANNEL_READY";
+      break;
+    case GRPC_CHANNEL_TRANSIENT_FAILURE:
+      channel_state = "GRPC_CHANNEL_TRANSIENT_FAILURE";
+      break;
+    case GRPC_CHANNEL_SHUTDOWN:
+      channel_state = "GRPC_CHANNEL_SHUTDOWN";
+      break;
+    default:
+      CHECK(false) << "Unknown channel state: " << channel_state_enum;
+      break;
+  }
+
+  if (channel_state_enum == GRPC_CHANNEL_READY) {
+    LOG(INFO) << "Channel state is " << channel_state;
+  } else {
+    LOG(ERROR) << "Channel state is " << channel_state;
+  }
+
+  if (fail_flag) {
+    done_flag_.store(true);
+    LOG(ERROR) << "There are some errors on gRPC channels, "
+               << "finishing RecognitionThread.";
+    return;
+  }
+
+  // Starts a async call if channel connection is successful.
   auto /* std::unique_ptr<ClientAsyncReaderWriterInterface> */ streamer
       = gspeech_stub_->AsyncStreamingRecognize(
           &context, &completion_queue, reinterpret_cast<void*>(++cq_seq));
@@ -218,18 +276,13 @@ void GoogleSpeechRecognizer::RecognitionThread(AudioQueue* audio_queue,
   // Blocks until the creation of the stream is done, we cannot start writing
   // until that happens.
   // See: https://github.com/GoogleCloudPlatform/cpp-docs-samples/issues/16
-  // Deadline to wait CompletionQueue to return a result, if the time is exceed,
-  // we will give up.
-  std::chrono::system_clock::time_point stream_cq_deadline =
-      std::chrono::system_clock::now()
-      + std::chrono::seconds(FLAGS_grpc_speech_connect_timeout_secs);
   // Result from CompletionQueue::AsyncNext
   void* stream_cq_tag = nullptr;
   bool stream_cq_ok = false;
   // Read from the completion_queue with some timeout
   grpc::CompletionQueue::NextStatus stream_cq_state
       = completion_queue.AsyncNext(&stream_cq_tag, &stream_cq_ok,
-                                   stream_cq_deadline);
+                                   stream_connect_deadline);
   if (stream_cq_state == grpc::CompletionQueue::GOT_EVENT) {
     if (!stream_cq_ok) {
       latest_result_ = Status(util::error::ABORTED,
@@ -244,8 +297,8 @@ void GoogleSpeechRecognizer::RecognitionThread(AudioQueue* audio_queue,
       LOG(INFO) << "gRPC created stream, tag is "
                 << reinterpret_cast<uintptr_t>(stream_cq_tag);
     } else {
-      latest_result_ = Status(
-          util::error::ABORTED, "gRPC fatal error: wrong stream creation tag.");
+      latest_result_ = Status(util::error::ABORTED,
+          "gRPC fatal error: wrong stream creation tag.");
       LOG(ERROR) << latest_result_.status();
       fail_flag = true;
     }

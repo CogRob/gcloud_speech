@@ -75,6 +75,7 @@ class GoogleSpeechRecognizer : public GoogleSpeechRecognizerInterface {
       int max_wait_seconds, int max_alternatives);
 
   std::mutex general_mutex_;
+  std::shared_ptr<grpc::ChannelInterface> channel_;
   std::unique_ptr<::google::cloud::speech::v1::Speech::Stub> gspeech_stub_;
   std::atomic_bool stop_flag_ {false};
   std::atomic_bool done_flag_ {false};
