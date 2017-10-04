@@ -58,7 +58,9 @@ Command line flag `--mic=MicrophoneName` sets the microphone the program uses.
 This package provides a `record_microphone_audio` node that publishes
 `LinearPcm16Le16000Audio`. By default it looks for USB microphones. You can add
 `--mic=MicrophoneName` to override this option. The argument only need to
-partially match of the micrphone name seen by portaudio.
+partially match of the micrphone name seen by portaudio. The
+`playback_microphone_audio.py` script enables monitoring the microphone topic.
+Due to limitations of PortAudio and ROS, there is noticeable latency.
 
 This package also provides a `example_client.py` program that interacts with the
 ActionServer.
