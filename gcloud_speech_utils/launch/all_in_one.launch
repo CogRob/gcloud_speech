@@ -12,7 +12,7 @@
     "
   />
 
-  <!-- Please replace Samson with a proper microphone name. -->
+  <!-- Please replace Logitech with a proper microphone name. -->
   <node name="record_microphone_audio" pkg="gcloud_speech_utils"
         type="record_microphone_audio" respawn="true" args="--mic=Logitech" />
 
