@@ -14,7 +14,7 @@
 
   <!-- Please replace Samson with a proper microphone name. -->
   <node name="record_microphone_audio" pkg="gcloud_speech_utils"
-        type="record_microphone_audio" respawn="true" args="--mic=Samson" />
+        type="record_microphone_audio" respawn="true" args="--mic=Logitech" />
 
   <node name="gcloud_speech_example_client" pkg="gcloud_speech_utils"
         type="example_client.py" respawn="true" output="screen"/>
