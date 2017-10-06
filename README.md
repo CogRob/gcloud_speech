@@ -40,7 +40,6 @@ correctly:
 ```
 --gcloud_cred=/path/to/your/google_cloud_credential.json
 --grpc_roots=/path/to/grpc_roots.pem
---gcloud_project=your_google_cloud_project_id
 ```
 The `grpc_roots.pem` file can be downloaded from
 [here](https://github.com/grpc/grpc/blob/master/etc/roots.pem). We have also
