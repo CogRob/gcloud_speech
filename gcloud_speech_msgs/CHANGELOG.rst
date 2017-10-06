@@ -2,6 +2,9 @@
 Changelog for package gcloud_speech_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.2 (2017-10-06)
 ------------------
 
