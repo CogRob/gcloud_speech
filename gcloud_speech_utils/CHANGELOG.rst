@@ -2,8 +2,8 @@
 Changelog for package gcloud_speech_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2017-10-06)
+------------------
 * Adds catkin_INCLUDE_DIRS to include_directories (`#16 <https://github.com/CogRob/gcloud_speech/issues/16>`_)
 * Removes documentation about the project name command line flag (`#15 <https://github.com/CogRob/gcloud_speech/issues/15>`_)
   * Removes documentation about the project name command line flag
