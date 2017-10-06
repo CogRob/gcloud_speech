@@ -16,6 +16,7 @@ find_package(catkin
 
 catkin_package()
 
+include_directories(${catkin_INCLUDE_DIRS})
 include_directories(src/workspace)
 
 add_library(gcloud_speech_utils_record_audio_lib
