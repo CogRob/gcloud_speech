@@ -10,6 +10,7 @@
 #include "cogrob/cloud/basic/defaults.h"
 #include "cogrob/cloud/speech/google_speech.h"
 #include "cogrob/cloud/speech/google_speech_interface.h"
+#include "third_party/gflags.h"
 
 #include "speech_to_text_action_handler.h"
 
