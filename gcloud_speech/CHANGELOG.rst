@@ -2,6 +2,11 @@
 Changelog for package gcloud_speech
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixes a problem that gflags is not found in the action server node source (`#14 <https://github.com/CogRob/gcloud_speech/issues/14>`_)
+* Contributors: Shengye Wang
+
 0.0.1 (2017-10-06)
 ------------------
 * Removes the clicking sound in playback microphone node (`#9 <https://github.com/CogRob/gcloud_speech/issues/9>`_)
