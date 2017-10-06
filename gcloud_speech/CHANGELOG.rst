@@ -2,8 +2,8 @@
 Changelog for package gcloud_speech
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-10-06)
+------------------
 * Removes the clicking sound in playback microphone node (`#9 <https://github.com/CogRob/gcloud_speech/issues/9>`_)
 * Adds a playback node to gcloud_speech_utils (`#7 <https://github.com/CogRob/gcloud_speech/issues/7>`_)
   * Adds a microphone playback node

@@ -2,8 +2,8 @@
 Changelog for package gcloud_speech_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-10-06)
+------------------
 * Fixes missing Copyright text in README (`#12 <https://github.com/CogRob/gcloud_speech/issues/12>`_)
   * Fixes missing Copyright text in README
   * Use Logitech instead of Samson in example launch file
