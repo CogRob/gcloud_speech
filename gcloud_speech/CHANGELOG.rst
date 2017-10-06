@@ -2,8 +2,8 @@
 Changelog for package gcloud_speech
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2017-10-06)
+------------------
 * Fixes a problem that gflags is not found in the action server node source (`#14 <https://github.com/CogRob/gcloud_speech/issues/14>`_)
 * Contributors: Shengye Wang
 
