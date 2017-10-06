@@ -1,6 +1,5 @@
 <launch>
-  <!-- Please replace gcloud_credentials.json and cogrob_devel with a proper
-       credential path and project name. -->
+  <!-- Please replace gcloud_credentials.json with a proper credential path. -->
   <node
     name="gcloud_speech_action_node"
     pkg="gcloud_speech"
