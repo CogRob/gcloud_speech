@@ -76,8 +76,11 @@ generate_proto(googleapis_speech_proto GRPC ${GOOGLEAPIS_SPEECH_PROTOS})
 generate_proto(cogrob_gcloud_speech_proto
   SRC_BASE src/workspace
   src/workspace/cogrob/cloud/speech/proto/recognition_result.proto)
+
+include_directories(${catkin_INCLUDE_DIRS})
 include_directories(src/workspace)
 include_directories(src/googleapis_include)
+
 add_library(gcloud_speech_lib
   src/workspace/util/statusor.cc
   src/workspace/util/status.cc
