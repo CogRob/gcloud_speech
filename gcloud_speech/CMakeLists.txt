@@ -109,3 +109,11 @@ if(GCLOUD_SPEECH_LOCAL_MAIN)
   target_link_libraries(speech_local_main
     gcloud_speech_record_audio_lib gcloud_speech_lib gflags glog)
 endif()
+
+install(
+  TARGETS gcloud_speech_action_node gcloud_speech_lib
+          cogrob_gcloud_speech_proto googleapis_speech_proto
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
