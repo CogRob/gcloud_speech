@@ -2,6 +2,11 @@
 Changelog for package gcloud_speech_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixes a problem that the binrary/libraries are not packed into deb file (`#18 <https://github.com/CogRob/gcloud_speech/issues/18>`_)
+* Contributors: Shengye Wang
+
 0.0.3 (2017-10-06)
 ------------------
 * Adds catkin_INCLUDE_DIRS to include_directories (`#16 <https://github.com/CogRob/gcloud_speech/issues/16>`_)
