@@ -34,3 +34,15 @@ target_link_libraries(print_rms
 add_executable(record_microphone_audio src/record_microphone_audio.cc)
 target_link_libraries(record_microphone_audio ${catkin_LIBRARIES}
   gcloud_speech_utils_record_audio_lib gflags glog)
+
+install(
+  TARGETS gcloud_speech_utils_record_audio_lib print_rms record_microphone_audio
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(
+  PROGRAMS scripts/example_client.py scripts/playback_microphone_audio.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
