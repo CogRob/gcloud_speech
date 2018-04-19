@@ -2,6 +2,9 @@
 Changelog for package gcloud_speech_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.4 (2017-10-07)
 ------------------
 * Fixes a problem that the binrary/libraries are not packed into deb file (`#18 <https://github.com/CogRob/gcloud_speech/issues/18>`_)
