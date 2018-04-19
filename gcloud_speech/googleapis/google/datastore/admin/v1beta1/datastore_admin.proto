@@ -1,6 +1,6 @@
 // This file is modified by CogRob to work with Catkin/ROS.
 
-// Copyright 2017 Google Inc.
+// Copyright 2018 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -90,7 +90,10 @@ service DatastoreAdmin {
   // cancelled before completion it may leave partial data behind in Google
   // Cloud Storage.
   rpc ExportEntities(ExportEntitiesRequest) returns (google.longrunning.Operation) {
-    option (google.api.http) = { post: "/v1beta1/projects/{project_id}:export" body: "*" };
+    option (google.api.http) = {
+      post: "/v1beta1/projects/{project_id}:export"
+      body: "*"
+    };
   }
 
   // Imports entities into Google Cloud Datastore. Existing entities with the
@@ -99,7 +102,10 @@ service DatastoreAdmin {
   // created. If an ImportEntities operation is cancelled, it is possible
   // that a subset of the data has already been imported to Cloud Datastore.
   rpc ImportEntities(ImportEntitiesRequest) returns (google.longrunning.Operation) {
-    option (google.api.http) = { post: "/v1beta1/projects/{project_id}:import" body: "*" };
+    option (google.api.http) = {
+      post: "/v1beta1/projects/{project_id}:import"
+      body: "*"
+    };
   }
 }
 

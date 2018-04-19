@@ -13,60 +13,60 @@ catkin_package()
 #   googleapis/google/logging googleapis/google/type -name '*.proto'
 
 set(GOOGLEAPIS_SPEECH_PROTOS
-  googleapis/google/api/metric.proto
-  googleapis/google/api/monitored_resource.proto
-  googleapis/google/api/experimental/experimental.proto
-  googleapis/google/api/experimental/authorization_config.proto
+  googleapis/google/api/monitoring.proto
+  googleapis/google/api/billing.proto
+  googleapis/google/api/source_info.proto
   googleapis/google/api/annotations.proto
-  googleapis/google/api/system_parameter.proto
+  googleapis/google/api/backend.proto
   googleapis/google/api/distribution.proto
-  googleapis/google/api/http.proto
+  googleapis/google/api/context.proto
   googleapis/google/api/servicemanagement/v1/servicemanager.proto
   googleapis/google/api/servicemanagement/v1/resources.proto
-  googleapis/google/api/service.proto
-  googleapis/google/api/monitoring.proto
-  googleapis/google/api/config_change.proto
-  googleapis/google/api/billing.proto
-  googleapis/google/api/endpoint.proto
-  googleapis/google/api/log.proto
-  googleapis/google/api/source_info.proto
-  googleapis/google/api/usage.proto
-  googleapis/google/api/context.proto
   googleapis/google/api/httpbody.proto
-  googleapis/google/api/logging.proto
-  googleapis/google/api/quota.proto
-  googleapis/google/api/auth.proto
-  googleapis/google/api/backend.proto
-  googleapis/google/api/servicecontrol/v1/operation.proto
-  googleapis/google/api/servicecontrol/v1/service_controller.proto
-  googleapis/google/api/servicecontrol/v1/check_error.proto
-  googleapis/google/api/servicecontrol/v1/log_entry.proto
-  googleapis/google/api/servicecontrol/v1/distribution.proto
-  googleapis/google/api/servicecontrol/v1/quota_controller.proto
-  googleapis/google/api/servicecontrol/v1/metric_value.proto
   googleapis/google/api/control.proto
   googleapis/google/api/consumer.proto
-  googleapis/google/api/documentation.proto
+  googleapis/google/api/endpoint.proto
+  googleapis/google/api/servicecontrol/v1/operation.proto
+  googleapis/google/api/servicecontrol/v1/distribution.proto
+  googleapis/google/api/servicecontrol/v1/check_error.proto
+  googleapis/google/api/servicecontrol/v1/service_controller.proto
+  googleapis/google/api/servicecontrol/v1/log_entry.proto
+  googleapis/google/api/servicecontrol/v1/quota_controller.proto
+  googleapis/google/api/servicecontrol/v1/metric_value.proto
   googleapis/google/api/label.proto
+  googleapis/google/api/quota.proto
+  googleapis/google/api/auth.proto
+  googleapis/google/api/experimental/authorization_config.proto
+  googleapis/google/api/experimental/experimental.proto
+  googleapis/google/api/metric.proto
+  googleapis/google/api/system_parameter.proto
+  googleapis/google/api/config_change.proto
+  googleapis/google/api/monitored_resource.proto
+  googleapis/google/api/log.proto
+  googleapis/google/api/service.proto
+  googleapis/google/api/usage.proto
+  googleapis/google/api/logging.proto
+  googleapis/google/api/documentation.proto
+  googleapis/google/api/http.proto
   googleapis/google/rpc/error_details.proto
   googleapis/google/rpc/code.proto
-  googleapis/google/cloud/speech/v1/cloud_speech.proto
-  googleapis/google/cloud/speech/v1_1beta1/cloud_speech.proto
   googleapis/google/cloud/speech/v1beta1/cloud_speech.proto
+  googleapis/google/cloud/speech/v1p1beta1/cloud_speech.proto
+  googleapis/google/cloud/speech/v1/cloud_speech.proto
   googleapis/google/longrunning/operations.proto
-  googleapis/google/logging/type/http_request.proto
-  googleapis/google/logging/type/log_severity.proto
   googleapis/google/logging/v2/log_entry.proto
   googleapis/google/logging/v2/logging_config.proto
-  googleapis/google/logging/v2/logging.proto
   googleapis/google/logging/v2/logging_metrics.proto
-  googleapis/google/type/dayofweek.proto
-  googleapis/google/type/date.proto
+  googleapis/google/logging/v2/logging.proto
+  googleapis/google/logging/type/http_request.proto
+  googleapis/google/logging/type/log_severity.proto
   googleapis/google/type/postal_address.proto
-  googleapis/google/type/timeofday.proto
-  googleapis/google/type/latlng.proto
   googleapis/google/type/color.proto
+  googleapis/google/type/latlng.proto
   googleapis/google/type/money.proto
+  googleapis/google/type/dayofweek.proto
+  googleapis/google/type/timeofday.proto
+  googleapis/google/type/date.proto
 )
 
 # Compile googleapis.

@@ -229,9 +229,6 @@ void GoogleSpeechRecognizer::RecognitionThread(AudioQueue* audio_queue,
   string channel_state = "";
   grpc_connectivity_state channel_state_enum = channel_->GetState(false);
   switch (channel_state_enum) {
-    case GRPC_CHANNEL_INIT:
-      channel_state = "GRPC_CHANNEL_INIT";
-      break;
     case GRPC_CHANNEL_IDLE:
       channel_state = "GRPC_CHANNEL_IDLE";
       break;
