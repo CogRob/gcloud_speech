@@ -2,8 +2,8 @@
 Changelog for package gcloud_speech
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2018-04-18)
+------------------
 * Sync googleapis with upstream, and fixes a bug that gcloud_speech not
   working with latest grpc.
 * Contributors: Shengye Wang
