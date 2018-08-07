@@ -42,6 +42,11 @@ install(
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(
+  DIRECTORY launch assets
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
 catkin_install_python(
   PROGRAMS scripts/example_client.py scripts/playback_microphone_audio.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
