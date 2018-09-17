@@ -1,6 +1,8 @@
 #ifndef SPEECH_TO_TEXT_ACTION_HANDLER_H_
 #define SPEECH_TO_TEXT_ACTION_HANDLER_H_
 
+#include <atomic>
+
 #include "actionlib/server/simple_action_server.h"
 #include "gcloud_speech_msgs/SpeechToTextAction.h"
 #include "gcloud_speech_msgs/RecognitionHypothesis.h"
@@ -35,6 +37,10 @@ class SpeechToTextActionHandler {
   // audio_queue_ contains audio samples, and will be populated by
   // AudioMsgCallback function.
   cogrob::cloud::speech::AudioQueue audio_queue_;
+
+  // is_active_ indicates whether the action server is active. This handler will
+  // only record audio if the action server is active.
+  std::atomic_bool is_active_;
 
   // result_queue_ contains results from recognizer_.
   util::SimpleThreadSafeQueue<cogrob::cloud::speech::RecognitionResult>

@@ -19,6 +19,7 @@ SpeechToTextActionHandler::SpeechToTextActionHandler(
     SpeechToTextSimpleActionServer* simple_action_server) {
   recognizer_ = recognizer;
   simple_action_server_ = simple_action_server;
+  is_active_.store(false);
 }
 
 
@@ -30,9 +31,11 @@ void SpeechToTextActionHandler::AudioMsgCallback(
       DCHECK(false);
       return;
   }
-  std::unique_ptr<speech::AudioSample> audio_sample(
-      new speech::AudioSample(msg->data));
-  audio_queue_.push(std::move(audio_sample));
+  if (is_active_.load()) {
+    std::unique_ptr<speech::AudioSample> audio_sample(
+        new speech::AudioSample(msg->data));
+    audio_queue_.push(std::move(audio_sample));
+  }
 }
 
 void SpeechToTextActionHandler::ExecuteSpeechToTextAction(
@@ -40,6 +43,7 @@ void SpeechToTextActionHandler::ExecuteSpeechToTextAction(
   audio_queue_.clear();
   result_queue_.clear();
   recognizer_->Stop();
+  is_active_.store(true);
 
   int max_audio_seconds = goal->listen_duration_sec;
   if (max_audio_seconds == 0) {
@@ -118,6 +122,7 @@ void SpeechToTextActionHandler::ExecuteSpeechToTextAction(
   } else {
     simple_action_server_->setSucceeded(result_msg);
   }
+  is_active_.store(false);
 }
 
 }  // namespace gcloud_speech
